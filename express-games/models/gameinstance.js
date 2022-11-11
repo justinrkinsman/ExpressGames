@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const GameInstanceSchema = new Schema({
-  game: { type: Schema.Types.ObjectId, ref: "Book", required: true }, // reference to the associated book
+  game: { type: Schema.Types.ObjectId, ref: "Game", required: true }, // reference to the associated game
   status: {
     type: String,
     required: true,
