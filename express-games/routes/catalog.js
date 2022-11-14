@@ -97,3 +97,27 @@ router.get("/genres", genre_controller.genre_list)
 
 
 // GET request for creating a GameInstance. NOTE This must come before route that display GameInstance (uses id).
+router.get('/gameinstance/create', game_instance_controller.gameInstance_create_get)
+
+// POST request for create GameInstance.
+router.post('/gameinstance/create', game_instance_controller.gameInstance_create_post)
+
+// GET request to delete GameInstance.
+router.get("/gameinstance/:id/delete", game_instance_controller.gameInstance_delete_get)
+
+// POST request to delete GameInstance.
+router.post("/gameinstance/:id/delete", game_instance_controller.gameInstance_delete_post)
+
+// GET request to update GameInstance.
+router.get("/gameinstance/:id/update", game_instance_controller.gameInstance_update_get)
+
+// POST request to update GameInstance.
+router.post("/gameinstance/:id/update", game_instance_controller.gameInstance_update_post)
+
+// GET request for one GameInstance.
+router.get("/gameinstance/:id", game_instance_controller.gameInstance_detail)
+
+// GET request for list of all GameInstances.
+router.get('/gameinstancecs', game_instance_controller.gameInstance_list)
+
+module.exports = router;

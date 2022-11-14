@@ -1,7 +1,7 @@
 const GameInstance = require("../models/gameinstance")
 
 // Display list of all GameInstances.
-exports.gameinstance_list = (req, res) => {
+exports.gameInstance_list = (req, res) => {
     res.send("NOT IMPLEMENTED: GameInstance list")
 }
 
