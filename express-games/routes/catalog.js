@@ -118,6 +118,6 @@ router.post("/gameinstance/:id/update", game_instance_controller.gameInstance_up
 router.get("/gameinstance/:id", game_instance_controller.gameInstance_detail)
 
 // GET request for list of all GameInstances.
-router.get('/gameinstancecs', game_instance_controller.gameInstance_list)
+router.get('/gameinstances', game_instance_controller.gameInstance_list)
 
 module.exports = router;
