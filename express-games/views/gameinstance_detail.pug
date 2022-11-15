@@ -1,0 +1,14 @@
+extends layout 
+
+block content 
+
+    h1 ID: #{gameinstance.id} 
+
+    p #[strong Title:] 
+        a(href=gameinstance.game.url) #{gameinstance.game.title} 
+
+    p #[strong Status:] 
+        if gameinstance.status == 'Available'
+            span.text-success #{gameinstance.status} 
+        else if gameinstance.status == 'Sold Out' 
+            span.text-danger #{gameinstance.status}

@@ -17,9 +17,26 @@ exports.gameInstance_list = function (req, res, next) {
 }
 
 // Display detail page for a specific GameInstance.
-exports.gameInstance_detail = (req, res) => {
-    res.send(`NOT IMPLEMENTED: GameInstance detail: ${req.params.id}`)
-}
+exports.gameInstance_detail = (req, res, next) => {
+    GameInstance.findById(req.params.id)
+        .populate('game')
+        .exec((err, gameinstance) => {
+            if (err) {
+                return next(err)
+            }
+            if (gameinstance == null) {
+                // No results.
+                const err = new Error("Game copy not found")
+                err.status = 404
+                return next(err)
+            }
+            // Successful, so render.
+            res.render("gameinstance_detail", {
+                title: `Copy: ${gameinstance.game.title}`, gameinstance,
+                id: req.params.id
+            })
+        })
+    }
 
 // Display GameInstance create form on GET.
 exports.gameInstance_create_get = (req, res) => {
