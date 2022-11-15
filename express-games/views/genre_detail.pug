@@ -12,7 +12,9 @@ block content
             each game in genre_games 
                 dt
                     a(href=game.url) #{game.title} 
+                dd #{game.cost} 
                 dd #{game.developer}
+                dd #{game.release_date_formatted}
 
             else 
                 p This genre has no games
