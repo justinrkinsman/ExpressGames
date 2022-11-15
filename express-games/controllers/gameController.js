@@ -5,26 +5,26 @@ const GameInstance = require("../models/gameinstance")
 
 const async = require("async")
 
-exports.index = (req, res) => {
+exports.index = function (req, res) {
     async.parallel(
         {
-            game_count(callback) {
+            game_count: function(callback) {
                 Game.countDocuments({}, callback) // Pass an empty object as match condition to find all documents of this collection
             },
-            game_instance_count(callback) {
+            game_instance_count: function(callback) {
                 GameInstance.countDocuments({}, callback)
             },
-            game_instance_available_count(callback) {
+            game_instance_available_count: function(callback) {
                 GameInstance.countDocuments({ status: "Available" }, callback)
             },
-            console_count(callback) {
+            console_count: function(callback) {
                 Console.countDocuments({}, callback)
             },
-            genre_count(callback) {
+            genre_count: function(callback) {
                 Genre.countDocuments({}, callback)
             },
         },
-        (err, results) => {
+        function (err, results) {
             res.render("index", {
                 title: "Express Games Home",
                 error: err,

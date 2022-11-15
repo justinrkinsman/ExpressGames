@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
 const GameSchema = new Schema({
-    title: { type: String, required: true, maxLength: 100, minLength: 1 },
+    title: { type: String, required: true },
     console: { type: Schema.Types.ObjectId, ref: "Console", required: true },
     genre: { type: Schema.Types.ObjectId, ref: "Genre", required: true },
     developer: { type: String },
@@ -14,7 +14,7 @@ const GameSchema = new Schema({
 
 // Virtual for console's URL
 GameSchema.virtual("url").get(function () {
-    return `/catalog/game/${this.id}`
+    return "/catalog/game/" + this.id
 })
 
 module.exports = mongoose.model("Game", GameSchema)
