@@ -27,9 +27,9 @@ var genres = []
 var games = []
 var gameInstances = []
 
-function consoleCreate(name, release, manufacturer, discontinued, unit_sold, cb) {
+function consoleCreate(name, release_year, manufacturer, discontinued, unit_sold, cb) {
   consoleDetail = {name: name}
-  if (release != false) consoleDetail.release = release
+  if (release_year != false) consoleDetail.release_year = release_year
   if (manufacturer != false) consoleDetail.manufacturer = manufacturer
   if (discontinued != false) consoleDetail.discontinued = discontinued
   if (unit_sold != false) consoleDetail.unit_sold = unit_sold

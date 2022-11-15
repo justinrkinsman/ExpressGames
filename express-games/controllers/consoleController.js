@@ -1,8 +1,20 @@
 const Console = require("../models/console")
 
 // Display list of all Consoles
-exports.console_list = (req, res) => {
-    res.send("NOT IMPLEMENTED: Console list")
+exports.console_list = function (req, res, next) {
+    Console.find()
+        .sort([["name", 'ascending']])
+        .populate("name release_year discontinued")
+        .exec(function (err, list_consoles) {
+            if (err) {
+                return next(err)
+            }
+            // Successful, so render
+            res.render("console_list", {
+                title: "Console List",
+                console_list: list_consoles,
+            })
+        })
 }
 
 // Display detail page for a specific Console.
