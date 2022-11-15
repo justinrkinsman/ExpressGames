@@ -1,0 +1,24 @@
+extends layout 
+
+block content 
+    h1 Title: #{game.title} 
+
+    p #[strong Cost:] #{game.cost}
+    p #[strong Console:] 
+        a(href=game.console.url) #{game.console.name} 
+    p #[strong Developer:] #{game.developer} 
+    p #[strong Publisher:] #{game.publisher} 
+    p #[strong Release Date:] #{game.release_date_formatted}
+    p #[strong Genre:] 
+        a(href=game.genre.url) #{game.genre.name}
+
+    div(style='margin-left:20px;margin-top:20px')
+        h4 Copies 
+
+        each val in game_instances 
+            hr
+            if val.status == 'Available'
+                p.text-success #{val.status}
+                p #[strong Product Number:] #{val._id}
+            else if val.status == 'Sold Out'
+                p.text-danger #{val.status}

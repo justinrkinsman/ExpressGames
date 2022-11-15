@@ -49,8 +49,35 @@ exports.game_list = function (req, res, next) {
 }
 
 // Display detail page for a specific game.
-exports.game_detail = (req, res) => {
-    res.send(`NOT IMPLEMENTED: Game detail: ${req.param.id}`)
+exports.game_detail = (req, res, next) => {
+    async.parallel(
+        {
+            game(callback) {
+                Game.findById(req.params.id)
+                    .populate("console")
+                    .populate("genre")
+                    .exec(callback)
+            },
+            game_instance(callback) {
+                GameInstance.find({ game: req.params.id }).exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            if (results.game === null) {
+                // No results.
+                const err = new Error("Game not found")
+            }
+            // Successful, so render.
+            res.render("game_detail", {
+                title: results.game.title,
+                game: results.game,
+                game_instances: results.game_instance,
+            })
+        }
+    )
 }
 
 // Display game create form on GET.
