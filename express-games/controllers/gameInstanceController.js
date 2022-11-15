@@ -1,8 +1,19 @@
 const GameInstance = require("../models/gameinstance")
 
 // Display list of all GameInstances.
-exports.gameInstance_list = (req, res) => {
-    res.send("NOT IMPLEMENTED: GameInstance list")
+exports.gameInstance_list = function (req, res, next) {
+    GameInstance.find()
+        .populate("game")
+        .exec(function (err, list_gameinstances) {
+            if (err) {
+                return next(err)
+            }
+            // Successful, so render
+            res.render("gameinstance_list", {
+                title: "Game Copies List",
+                gameinstance_list: list_gameinstances,
+            })
+        })
 }
 
 // Display detail page for a specific GameInstance.

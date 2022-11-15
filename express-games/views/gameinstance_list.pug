@@ -1,0 +1,16 @@
+extends layout 
+
+block content 
+    h1= title 
+
+    ul 
+        each val in gameinstance_list 
+            li 
+                a(href=val.url) #{val.game.title} : #{val.imprint} -
+                if val.status=='Available'
+                    span.text-success #{val.status} 
+                else if val.status=='Sold Out'
+                    span.text-danger #{val.status} 
+
+        else
+            li There are no game copies in the store
