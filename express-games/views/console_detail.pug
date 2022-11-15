@@ -1,0 +1,23 @@
+extends layout 
+
+block content 
+
+    h1 #{console.name} 
+    p Manufactuer: #{console.manufacturer}
+    p Release Year: #{console.release_year} 
+    p Discontinued: #{console.discontinued} 
+    p Total Units Sold: #{console.unit_sold}
+
+    div(style='margin-left:20px;margin-top:20px')
+
+        h4 Games 
+
+        dl 
+            each game in console_games 
+                dt 
+                    a(href=game.url) #{game.title} 
+                dd #{game.cost} 
+                dd #{game.genre}
+
+            else 
+                p This console has no games.

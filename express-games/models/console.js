@@ -7,7 +7,7 @@ const ConsoleSchema = new Schema({
     release_year: { type: Number, minLength: 4, maxLength: 4 },
     manufacturer: { type: String },
     discontinued: { type: Number, minLength: 4, maxLength: 4 },
-    units_sold: { type: String }
+    unit_sold: { type: String }
 })
 
 // Virtual for console's URL

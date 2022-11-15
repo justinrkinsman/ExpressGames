@@ -1,4 +1,6 @@
 const Console = require("../models/console")
+const Game = require('../models/game')
+const async = require("async")
 
 // Display list of all Consoles
 exports.console_list = function (req, res, next) {
@@ -18,8 +20,35 @@ exports.console_list = function (req, res, next) {
 }
 
 // Display detail page for a specific Console.
-exports.console_detail = (req, res) => {
-    res.send(`NOT IMPLEMENTED: Console detail: ${req.params.id}`)
+exports.console_detail = (req, res, next) => {
+    async.parallel(
+        {
+            console(callback) {
+                Console.findById(req.params.id).exec(callback)
+            },
+            console_games(callback) {
+                Game.find({ console: req.params.id }, "title").exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                // Error in API usage.
+                return next(err)
+            }
+            if (results.console == null) {
+                // No results.
+                const err = new Error("Console not found")
+                err.status = 404
+                return next(err)
+            }
+            // Successful, so render.
+            res.render("console_detail", {
+                title: "Console Detail",
+                console: results.console,
+                console_games: results.console_games,
+            })
+        }
+    )
 }
 
 // Display Author create form on GET.
