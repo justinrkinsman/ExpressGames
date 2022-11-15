@@ -1,7 +1,37 @@
 const Game = require("../models/game")
+const Console = require("../models/console")
+const Genre = require("../models/genre")
+const GameInstance = require("../models/gameinstance")
+
+const async = require("async")
 
 exports.index = (req, res) => {
-    res.send("NOT IMPLEMENTED: Site Home Page")
+    async.parallel(
+        {
+            game_count(callback) {
+                Game.countDocuments({}, callback) // Pass an empty object as match condition to find all documents of this collection
+            },
+            game_instance_count(callback) {
+                GameInstance.countDocuments({}, callback)
+            },
+            game_instance_available_count(callback) {
+                GameInstance.countDocuments({ status: "Available" }, callback)
+            },
+            console_count(callback) {
+                Console.countDocuments({}, callback)
+            },
+            genre_count(callback) {
+                Genre.countDocuments({}, callback)
+            },
+        },
+        (err, results) => {
+            res.render("index", {
+                title: "Express Games Home",
+                error: err,
+                data: results,
+            })
+        }
+    )
 }
 
 // Display list of all games.
