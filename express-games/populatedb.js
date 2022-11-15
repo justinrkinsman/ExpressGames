@@ -103,7 +103,7 @@ function gameInstanceCreate(game, status, cb) {
     cb(null, game)
   }  );
 }
-
+/*name, release_year, manufacturer, discontinued, unit_sold, cb*/
 function createConsoleGenres(cb) {
     async.series([
         function(callback) {
