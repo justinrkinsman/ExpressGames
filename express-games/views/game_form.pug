@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  h1= title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='title') Title:
+      input#title.form-control(type='text', placeholder='Name of game' name='title' required='true' value=(undefined===game ? '' : game.title) )
+      label(for='cost') Cost: 
+      input#cost.form-control(type='text', placeholder='$xx.xx' name='cost' required='true' value=(undefined===game ? '' : game.cost) )
+    div.form-group
+      label(for='console') Console:
+      select#console.form-control(type='select', placeholder='Select console' name='console' required='true' )
+        - consoles.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for console in consoles
+          if game
+            option(value=console._id selected=(console._id.toString()===game.console._id.toString() ? 'selected' : false) ) #{console.name}
+          else
+            option(value=console._id) #{console.name}
+    div.form-group
+      label(for='developer') Developer:
+      input#developer.form-control(type='text', placeholder='Rockstar North' name='developer' required='true' value=(undefined===game ? '' : game.developer))
+      label(for='publisher') Publisher: 
+      input#publisher.form-control(type='text', placeholder='Take Two Interactive' name='publisher' required='true' value=(undefined===game ? '' : game.publisher))
+    div.form-group
+      label(for='release_date') Release Date:
+      input#release_date.form-control(type='date', placeholder='2018-10-18' name='release_date' value=(undefined===game ? '' : game.release_date) required='true')
+    div.form-group
+      label Genre:
+      div
+        for genre in genres
+          div(style='display: inline; padding-right:10px;')
+            input.checkbox-input(type='checkbox', name='genre', id=genre._id, value=genre._id, checked=genre.checked )
+            label(for=genre._id) #{genre.name}
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors
+    ul
+      for error in errors
+        li!= error.msg
