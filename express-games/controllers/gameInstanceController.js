@@ -51,6 +51,7 @@ exports.gameInstance_create_get = (req, res, next) => {
         // Successful, so render.
         res.render("gameinstance_form", {
             title: "Create GameInstance",
+            game_list: games
         })
     })
 }
@@ -148,3 +149,91 @@ exports.gameInstance_delete_post = (req, res, next) => {
             })
         })
     }
+
+            
+
+// Display GameInstance update form on GET.
+exports.gameInstance_update_get = (req, res, next) => {
+    // Get gameinstance for form.
+    async.parallel(
+        {
+            gameinstance(callback) {
+                GameInstance.findById(req.params.id)
+                    .populate("game")
+                    .populate("status")
+                    .exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            if (results.gameinstance == null) {
+                // No results
+                const err = new Error('Console not found')
+                err.status = 404
+                return next(err)
+            }
+            // Success.
+            res.render("gameinstance_form", {
+                title: "Update GameInstance",
+                gameinstance: results.gameinstance,
+            })
+        }
+    )
+}
+
+// Handle GameInstance update on POST.
+exports.gameInstance_update_post = [
+    // Validate and sanitize fields.
+    body("status", "Name must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+        // Extract the validation errors from a request.
+        const errors = validationResult(req)
+
+        // Create a GameINstance object with escaped/trimmed date and old id.
+        const gameinstance = new GameInstance({
+            status: req.body.status,
+            _id: req.params.id, //This is required, or a new ID will be assigned
+        })
+
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/error messages.
+            
+            // Get all gameistances for form.
+            async.parallel(
+                {
+                    gameinstances(callback) {
+                        GameInstance.find(callback)
+                    },
+                },
+                (err, results) => {
+                    if (err) {
+                        return next(err)
+                    }
+                    res.render("gameinstance_form", {
+                        title: "Update GameInstance",
+                        gameinstance,
+                        errors: errors.array(),
+                    })
+                }
+            )
+            return
+        }
+
+        // Data form form is valid. Update the record.
+        Console.findByIdAndUpdate(req.params.id, gameinstance, {}, (err, thegameinstance) => {
+            if (err) {
+                return next(err)
+            }
+
+            // Successful: redirect to Console detail page.
+            res.redirect(thegameinstance.url)
+        })
+    }
+]
