@@ -25,3 +25,9 @@ block content
                 p #[strong Product Number:] #{val._id}
             else if val.status == 'Sold Out'
                 p.text-danger #{val.status}
+
+        hr
+        p 
+            a(href=game.url+'/delete') Delete Game
+        p 
+            a(href=game.url+'/update') Update Game

@@ -15,7 +15,14 @@ block content
         - consoles.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for console in consoles
           if game
-            option(value=console._id selected=(console._id.toString()===game.console._id.toString() ? 'selected' : false) ) #{console.name}
+            //- Handle GET form, where game.console is an object, and POST form, where it is a string.
+            option(
+              value=console._id 
+              selected=(
+                console._id.toString()==game.console._id
+                || console._id.toString()==game.console 
+              ) ? 'selected' : false
+            ) #{console.name}
           else
             option(value=console._id) #{console.name}
     div.form-group

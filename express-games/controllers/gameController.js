@@ -218,11 +218,151 @@ exports.game_delete_post = (req, res) => {
 }
 
 // Display game update form on GET.
-exports.game_update_get = (req, res) => {
-    res.send("NOT IMPLEMENTED: Game update GET")
+exports.game_update_get = (req, res, next) => {
+    // Get game, consoles and genres for form.
+    async.parallel(
+        {
+            game(callback) {
+                Game.findById(req.params.id)
+                    .populate("console")
+                    .populate("genre")
+                    .exec(callback)
+            },
+            consoles(callback) {
+                Console.find(callback)
+            },
+            genres(callback) {
+                Genre.find(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            if (results.game == null) {
+                // No results
+                const err = new Error('Game not found')
+                err.status = 404
+                return next(err)
+            }
+            // Success.
+            // Mark our selected genres as checked.
+            for (const genre of results.genres) {
+                for (const gameGenre of results.game.genre) {
+                    if (genre._id.toString() === gameGenre._id.toString()) {
+                        genre.checked = 'true'
+                    }
+                }
+            }
+            res.render("game_form", {
+                title: "Update Game",
+                consoles: results.consoles,
+                genres: results.genres,
+                game: results.game,
+            })
+        }
+    )
 }
 
 // Handle book update on POST.
-exports.game_update_post = (req, res) => {
-    res.send("NOT IMPLEMENTED: Book update POST")
-}
+exports.game_update_post = [
+    // Convert the genre to an array
+    (req, res, next) => {
+        if (!Array.isArray(req.body.genre)) {
+            req.body.genre = 
+                typeof req.body.genre === "undefined" ? [] : [req.body.genre]
+        }
+        next()
+    },
+
+    // Validate and sanitize fields.
+    body("title", "Title must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    body("console", "Console must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    body('developer', "Developer must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    body('publisher', "Publisher must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    body('release_date', "Release date must not be empty.")
+        .trim()
+        .isISO8601()
+        .toDate(),
+    body('cost', "Cost must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    body("genre.*").escape(),
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+        // Extract the validation errors from a request.
+        const errors = validationResult(req)
+
+        // Create a Game object with escaped/trimmed date and old id.
+        const game = new Game({
+            title: req.body.title,
+            console: req.body.console,
+            developer: req.body.developer,
+            publisher: req.body.publisher,
+            release_date: req.body.release_date,
+            cost: req.body.cost,
+            genre: typeof req.body.genre === 'undefined' ? [] : req.body.genre,
+            _id: req.params.id, //This is required, or a new ID will be assigned
+        })
+
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/error messages.
+            
+            // Get all consoles and genres for form.
+            async.parallel(
+                {
+                    consoles(callback) {
+                        Console.find(callback)
+                    },
+                    genres(callback) {
+                        Genre.find(callback)
+                    },
+                },
+                (err, results) => {
+                    if (err) {
+                        return next(err)
+                    }
+
+                    // Mark our selected genres as checked.
+                    for (const genre of results.genres) {
+                        if (game.genre.includes(genre._id)) {
+                            genre.checked = 'true'
+                        }
+                    }
+                    res.render("game_form", {
+                        title: "Update Game",
+                        consoles: results.consoles,
+                        genres: results.genres,
+                        game,
+                        errors: errors.array(),
+                    })
+                }
+            )
+            return
+        }
+
+        // Data form form is valid. Update the record.
+        Game.findByIdAndUpdate(req.params.id, game, {}, (err, thegame) => {
+            if (err) {
+                return next(err)
+            }
+
+            // Successful: redirect to book detail page.
+            res.redirect(thegame.url)
+        })
+    }
+]
