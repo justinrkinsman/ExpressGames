@@ -10,7 +10,10 @@ block content
     p #[strong Publisher:] #{game.publisher} 
     p #[strong Release Date:] #{game.release_date_formatted}
     p #[strong Genre:] 
-        a(href=game.genre.url) #{game.genre.name}
+        each val, index in game.genre 
+            a(href=val.url) #{val.name}
+            if index < game.genre.length - 1
+                |, 
 
     div(style='margin-left:20px;margin-top:20px')
         h4 Copies 
