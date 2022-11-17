@@ -198,10 +198,115 @@ exports.console_delete_post = (req, res, next) => {
 }
 
 // Display Console update form on GET.
-exports.console_update_get = (req, res) => {
-    res.send("NOT IMPLEMENTED: Console update GET")
+exports.console_update_get = (req, res, next) => {
+    // Get console for form.
+    async.parallel(
+        {
+            console(callback) {
+                Console.findById(req.params.id)
+                    .populate("name")
+                    .populate("manufacturer")
+                    .populate("release_year")
+                    .populate("discontinued")
+                    .populate("unit_sold")
+                    .exec(callback)
+            },
+            games(callback) {
+                Game.find(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            if (results.console == null) {
+                // No results
+                const err = new Error('Console not found')
+                err.status = 404
+                return next(err)
+            }
+            // Success.
+            res.render("console_form", {
+                title: "Update Console",
+                console: results.console,
+                games: results.games
+            })
+        }
+    )
 }
 
-exports.console_update_post = (req,res) => {
-    res.send("NOT IMPLEMENTED: Console update POST")
-}
+// Handle console update on POST
+exports.console_update_post = [
+    // Validate and sanitize fields.
+    body("name", "Name must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    body("manufacturer", "Manufacturer must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    body('release_year', "Release year must not be empty.")
+        .trim()
+        .isDecimal()
+        .escape(),
+    body('discontinued', "Discontinued year must not be empty.")
+        .trim()
+        .isDecimal()
+        .escape(),
+    body('unit_sold', "Units Sold must not be empty")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+        // Extract the validation errors from a request.
+        const errors = validationResult(req)
+
+        // Create a Game object with escaped/trimmed date and old id.
+        const console = new Console({
+            name: req.body.name,
+            manufacturer: req.body.manufacturer,
+            release_year: req.body.release_year,
+            discontinued: req.body.discontinued,
+            unit_sold: req.body.unit_sold,
+            _id: req.params.id, //This is required, or a new ID will be assigned
+        })
+
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/error messages.
+            
+            // Get all games for form.
+            async.parallel(
+                {
+                    games(callback) {
+                        Game.find(callback)
+                    },
+                },
+                (err, results) => {
+                    if (err) {
+                        return next(err)
+                    }
+                    res.render("console_form", {
+                        title: "Console Game",
+                        games: results.games,
+                        console,
+                        errors: errors.array(),
+                    })
+                }
+            )
+            return
+        }
+
+        // Data form form is valid. Update the record.
+        Console.findByIdAndUpdate(req.params.id, console, {}, (err, theconsole) => {
+            if (err) {
+                return next(err)
+            }
+
+            // Successful: redirect to Console detail page.
+            res.redirect(theconsole.url)
+        })
+    }
+]

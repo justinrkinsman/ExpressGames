@@ -321,7 +321,7 @@ exports.game_update_get = (req, res, next) => {
     )
 }
 
-// Handle book update on POST.
+// Handle game update on POST.
 exports.game_update_post = [
     // Convert the genre to an array
     (req, res, next) => {
@@ -418,7 +418,7 @@ exports.game_update_post = [
                 return next(err)
             }
 
-            // Successful: redirect to book detail page.
+            // Successful: redirect to game detail page.
             res.redirect(thegame.url)
         })
     }
