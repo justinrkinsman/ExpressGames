@@ -208,13 +208,70 @@ exports.game_create_post = [
 ]
 
 // Display game delete form on GET.
-exports.game_delete_get = (req, res) => {
-    res.send("NOT IMPLEMENTED: Game delete GET")
+exports.game_delete_get = (req, res, next) => {
+    async.parallel(
+        {
+            game(callback) {
+                Game.findById(req.params.id).exec(callback)
+            },
+            games_gameinstances(callback) {
+                GameInstance.find({ game: req.params.id }).exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            if (results.game == null) {
+                // No results.
+                res.redirect("/catalog/games")
+            }
+            // Successful, so render.
+            res.render("game_delete", {
+                title: "Delete Game",
+                game: results.game,
+                game_gameinstances: results.games_gameinstances,
+            })
+        }
+    )
 }
 
 // Handle game delete on POST.
-exports.game_delete_post = (req, res) => {
-    res.send('NOT IMPLEMENTED: Game delete POST')
+exports.game_delete_post = (req, res, next) => {
+    async.parallel(
+        {
+            game(callback) {
+                Game.findById(req.body.gameid).exec(callback)
+            },
+            games_gameinstances(callback) {
+                GameInstance.find({ game: req.body.gameid }).exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            // Success
+            if (results.games_gameinstances.length > 0) {
+                // Game has gameinstances. Render in the same way as for GET route
+                res.render('game_delete', {
+                    title: "Delete Game",
+                    game: results.game,
+                    game_gameinstances: results.games_gameinstances,
+                })
+                return
+            } else {
+            // Game has no instances. Delete object and redirect to the list of games
+                Game.findByIdAndRemove(req.body.gameid, (err) => {
+                    if (err) {
+                        return next(err)
+                    }
+                    // Success - go to game list
+                    res.redirect("/catalog/games")
+                })
+            }
+        }
+    )    
 }
 
 // Display game update form on GET.
