@@ -12,7 +12,7 @@ const GameInstanceSchema = new Schema({
   },
 });
 
-// Virtual for bookinstance's URL
+// Virtual for gameinstance's URL
 GameInstanceSchema.virtual("url").get(function () {
   // We don't use an arrow function as we'll need the this object
   return `/catalog/gameinstance/${this._id}`;
