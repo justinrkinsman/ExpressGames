@@ -131,13 +131,70 @@ exports.console_create_post = [
 ]
 
 // Display Console delete form on GET.
-exports.console_delete_get = (req, res) => {
-    res.send("NOT IMPLEMENTED: Console delete GET")
+exports.console_delete_get = (req, res, next) => {
+    async.parallel(
+        {
+            console(callback) {
+                Console.findById(req.params.id).exec(callback)
+            },
+            consoles_games(callback) {
+                Game.find({ console: req.params.id}).exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            if (results.console == null) {
+                // No results.
+                res.redirect("/catalog/consoles")
+            }
+            // Successful, so render.
+            res.render("console_delete", {
+                title: "Delete Console",
+                console: results.console,
+                console_games: results.consoles_games,
+            })
+        }
+    )
 }
 
 // Handle Console delete on POST.
-exports.console_delete_post = (req, res) => {
-    res.send("NOT IMPLEMENTED: Console delete POST")
+exports.console_delete_post = (req, res, next) => {
+    async.parallel(
+        {
+            console(callback) {
+                Console.findById(req.body.consoleid).exec(callback)
+            },
+            consoles_games(callback) {
+                Game.find({ console: req.body.consoleid }).exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            // Success
+            if (results.consoles_games.length > 0) {
+                // Console has games. Render in the same way as for GET route
+                res.render('console_delete', {
+                    title: "Delete Console",
+                    console: results.console,
+                    console_games: results.consoles_games,
+                })
+                return
+            } else {
+            // Console has no games. Delete object and redirect to the list of consoles
+                Console.findByIdAndRemove(req.body.consoleid, (err) => {
+                    if (err) {
+                        return next(err)
+                    }
+                    // Success - go to author list
+                    res.redirect("/catalog/consoles")
+                })
+            }
+        }
+    )    
 }
 
 // Display Console update form on GET.
