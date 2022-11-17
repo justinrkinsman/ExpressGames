@@ -1,7 +1,7 @@
 extends layout 
 
 block content 
-    h1 #{title}: #{game.name} 
+    h1 #{title}: #{game.game} 
 
     if game_gameinstances.length 
 
@@ -14,7 +14,7 @@ block content
              dl 
             each gameinstance in game_gameinstances 
                 dt 
-                    a(href=gameinstance.url) #{gameinstance.title} 
+                    a(href=gameinstance.url) #{gameinstance._id} 
                 dd #{gameinstance.status}
 
     else 

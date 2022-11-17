@@ -12,3 +12,9 @@ block content
             span.text-success #{gameinstance.status} 
         else if gameinstance.status == 'Sold Out' 
             span.text-danger #{gameinstance.status}
+
+    hr
+    p 
+        a(href=gameinstance.url+'/delete') Delete GameInstance
+    p 
+        a(href=gameinstance.url+'/update') Update GameInstance

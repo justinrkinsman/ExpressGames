@@ -2,6 +2,8 @@ const GameInstance = require("../models/gameinstance")
 const { body, validationResult } = require("express-validator")
 const Game = require("../models/game")
 
+const async = require('async')
+
 // Display list of all GameInstances.
 exports.gameInstance_list = function (req, res, next) {
     GameInstance.find()
@@ -49,7 +51,6 @@ exports.gameInstance_create_get = (req, res, next) => {
         // Successful, so render.
         res.render("gameinstance_form", {
             title: "Create GameInstance",
-            game_list: games,
         })
     })
 }
@@ -101,14 +102,54 @@ exports.gameInstance_create_post = [
 ]
 
 // Display GameInstance delete form on GET.
-exports.gameInstance_delete_get = (req, res) => {
-    res.send("NOT IMPLEMENTED: GameInstance delete GET")
+exports.gameInstance_delete_get = (req, res, next) => {
+    async.parallel(
+        {
+            gameinstance(callback) {
+                GameInstance.findById(req.params.id).exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            if (results.gameinstance == null) {
+                // No results.
+                res.redirect("/catalog/gameinstances")
+            }
+            // Successful, so render.
+            res.render("gameinstance_delete", {
+                title: "Delete GameInstance",
+                gameinstance: results.gameinstance,
+            })
+        }
+    )
 }
 
 // Handle GameInstance delete on POST.
-exports.gameInstance_delete_post = (req, res) => {
-    res.send("NOT IMPLEMENTED: GameInstance delete POST")
-}
+exports.gameInstance_delete_post = (req, res, next) => {
+    async.parallel(
+        {
+            gameinstance(callback) {
+                GameInstance.findById(req.body.gameinstanceid).exec(callback)
+            },
+        },
+        (err, results) => {
+            if (err) {
+                return next(err)
+            }
+            // Success. Delete object and redirect to the list of gameinstances
+            GameInstance.findByIdAndDelete(req.body.gameinstanceid, (err) => {
+                if (err) {
+                    return next(err)
+                }
+                // Success - go to game instance list
+                res.redirect("/catalog/gameinstances")
+            })
+        })
+    }
+
+            
 
 // Display GameInstance update form on GET.
 exports.gameInstance_update_get = (req, res) => {

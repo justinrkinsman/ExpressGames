@@ -222,7 +222,7 @@ exports.game_delete_get = (req, res, next) => {
             if (err) {
                 return next(err)
             }
-            if (results.game == null) {
+            if (results.gameinstance == null) {
                 // No results.
                 res.redirect("/catalog/games")
             }
