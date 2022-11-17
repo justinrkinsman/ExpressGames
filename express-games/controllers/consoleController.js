@@ -289,7 +289,7 @@ exports.console_update_post = [
                         return next(err)
                     }
                     res.render("console_form", {
-                        title: "Console Game",
+                        title: "Update Game",
                         games: results.games,
                         console,
                         errors: errors.array(),

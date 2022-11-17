@@ -148,15 +148,3 @@ exports.gameInstance_delete_post = (req, res, next) => {
             })
         })
     }
-
-            
-
-// Display GameInstance update form on GET.
-exports.gameInstance_update_get = (req, res) => {
-    res.send("NOT IMPLEMENTED: GameInstance update GET")
-}
-
-// Handle GameInstance update on POST.
-exports.gameInstance_update_post = (req, res) => {
-    res.send("NOT IMPLEMENTED: GameInstance update POST")
-}

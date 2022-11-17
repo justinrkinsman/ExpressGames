@@ -108,12 +108,6 @@ router.get("/gameinstance/:id/delete", game_instance_controller.gameInstance_del
 // POST request to delete GameInstance.
 router.post("/gameinstance/:id/delete", game_instance_controller.gameInstance_delete_post)
 
-// GET request to update GameInstance.
-router.get("/gameinstance/:id/update", game_instance_controller.gameInstance_update_get)
-
-// POST request to update GameInstance.
-router.post("/gameinstance/:id/update", game_instance_controller.gameInstance_update_post)
-
 // GET request for one GameInstance.
 router.get("/gameinstance/:id", game_instance_controller.gameInstance_detail)
 
