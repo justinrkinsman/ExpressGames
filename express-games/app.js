@@ -1,3 +1,4 @@
+require('dotenv').config()
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -17,7 +18,7 @@ app.use(helmet())
 
 // Set up mongoose connection
 const mongoose = require("mongoose")
-const dev_db_url = "mongodb+srv://justin:justinExpressGames@cluster0.yny9hjp.mongodb.net/express_games?retryWrites=true&w=majority"
+const dev_db_url = process.env.MONGO_URL
 const mongoDB = process.env.MONGODB_URI || dev_db_url
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
